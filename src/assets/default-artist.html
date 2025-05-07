@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Default Artist Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+        button {
+            display: block;
+            margin-top: 20px;
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Default Artist Image Generator</h1>
+    <p>Haz clic en el botón para generar y descargar la imagen predeterminada para artistas sin foto.</p>
+    
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <button id="downloadBtn">Descargar default-artist.jpg</button>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Dibujar la imagen predeterminada
+        function drawDefaultImage() {
+            const size = 300;
+            
+            // Fondo
+            ctx.fillStyle = '#eeeeee';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Círculo para la silueta
+            ctx.fillStyle = '#cccccc';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2 - 20, size * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cuerpo de la silueta
+            ctx.beginPath();
+            ctx.ellipse(size/2, size/2 + 70, size * 0.3, size * 0.4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Texto
+            ctx.fillStyle = '#3f51b5';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('No Image Available', size/2, size - 40);
+            ctx.font = '18px Arial';
+            ctx.fillText('Music Explorer', size/2, size - 15);
+        }
+        
+        // Dibujar y configurar descarga
+        drawDefaultImage();
+        
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const link = document.createElement('a');
+            link.download = 'default-artist.jpg';
+            // Usar jpg para compatibilidad y tamaño menor
+            link.href = canvas.toDataURL('image/jpeg', 0.8);
+            link.click();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+.artist-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.artist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: #f5f5f5;
+  min-height: 200px;
+  position: relative;
+}
+
+.default-image-container::after {
+  content: "No image available";
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  background-color: rgba(255,255,255,0.7);
+  padding: 4px;
+}
+
+.artist-image {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+}
+
+.debug-info {
+  font-size: 10px;
+  color: #999;
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+mat-card-content {
+  flex-grow: 1;
+  padding: 16px;
+}
+
+mat-card-header {
+  padding-bottom: 8px;
+}

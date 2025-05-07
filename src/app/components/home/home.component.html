@@ -1,0 +1,67 @@
+<!-- src/app/components/home/home.component.html -->
+<div class="home-container">
+  <mat-toolbar color="primary">
+    <span>Music Explorer - Top Artists</span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="toggleView('cards')" [class.active]="viewMode === 'cards'">
+      <mat-icon>view_module</mat-icon>
+    </button>
+    <button mat-icon-button (click)="toggleView('table')" [class.active]="viewMode === 'table'">
+      <mat-icon>view_list</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="container">
+    <div class="search-bar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search artists</mat-label>
+        <input matInput [(ngModel)]="searchTerm" (input)="onSearch($event)" placeholder="Type artist name...">
+        <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="searchTerm=''; loadTopArtists()">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <div class="view-toggle">
+      <button mat-raised-button color="primary" (click)="toggleView('cards')" [class.active]="viewMode === 'cards'">
+        <mat-icon>view_module</mat-icon> Cards
+      </button>
+      <button mat-raised-button color="primary" (click)="toggleView('table')" [class.active]="viewMode === 'table'">
+        <mat-icon>view_list</mat-icon> Table
+      </button>
+    </div>
+
+    <!-- Spinner mientras carga -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!loading && artists.length === 0" class="no-results">
+      <mat-icon>sentiment_dissatisfied</mat-icon>
+      <p>No artists found. Try another search term.</p>
+    </div>
+
+    <!-- Contenido -->
+    <div *ngIf="!loading && artists.length > 0" @fadeIn class="content-container">
+      <!-- Vista de tarjetas -->
+      <div *ngIf="viewMode === 'cards'" class="card-container">
+        <app-artist-card 
+          *ngFor="let artist of artists" 
+          [artist]="artist" 
+          (click)="viewDetails(artist.id)">
+        </app-artist-card>
+      </div>
+
+      <!-- Vista de tabla -->
+      <div *ngIf="viewMode === 'table'">
+        <app-artist-grid 
+          [artists]="artists" 
+          [displayedColumns]="displayedColumns" 
+          (rowClick)="viewDetails($event)">
+        </app-artist-grid>
+      </div>
+    </div>
+  </div>
+</div>

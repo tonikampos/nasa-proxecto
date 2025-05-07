@@ -14,16 +14,17 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'nasa-proxecto' title`, () => {
+  it(`should have the 'Music Explorer' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('nasa-proxecto');
+    expect(app.title).toEqual('Music Explorer');
   });
 
-  it('should render title', () => {
+  it('should render title in the toolbar', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, nasa-proxecto');
+    const toolbar = compiled.querySelector('mat-toolbar');
+    expect(toolbar?.textContent).toContain('Music Explorer');
   });
 });

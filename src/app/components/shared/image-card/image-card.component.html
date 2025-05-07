@@ -1,0 +1,13 @@
+<mat-card class="image-card">
+  <mat-card-header>
+    <mat-card-title>{{ image.title }}</mat-card-title>
+    <mat-card-subtitle>{{ image.date | date }}</mat-card-subtitle>
+  </mat-card-header>
+  <img mat-card-image [src]="image.url" [alt]="image.title" class="card-image">
+  <mat-card-content>
+    <p>{{ image.explanation | slice:0:100 }}...</p>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button color="primary">VIEW DETAILS</button>
+  </mat-card-actions>
+</mat-card>

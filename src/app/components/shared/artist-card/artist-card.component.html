@@ -1,0 +1,25 @@
+<mat-card class="artist-card">
+  <mat-card-header>
+    <mat-card-title>{{ artist?.name }}</mat-card-title>
+    <mat-card-subtitle *ngIf="artist?.listeners">Listeners: {{ artist?.listeners }}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <div class="image-container">
+    <!-- SIMPLIFICADO AL MÁXIMO - Sin manipulación de imágenes -->
+    <div *ngIf="artist?.image" class="debug-info">
+      <p>La URL original es: {{ artist?.image }}</p>
+    </div>
+    <img 
+      [src]="artist?.image" 
+      [alt]="artist?.name"
+      class="artist-image">
+  </div>
+  
+  <mat-card-content>
+    <p *ngIf="artist?.listeners">Listeners: {{ artist?.listeners }}</p>
+  </mat-card-content>
+  
+  <mat-card-actions>
+    <button mat-button color="primary">DETAILS</button>
+  </mat-card-actions>
+</mat-card>

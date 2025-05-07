@@ -1,0 +1,17 @@
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+tr.mat-mdc-row {
+  cursor: pointer;
+}
+
+tr.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+}

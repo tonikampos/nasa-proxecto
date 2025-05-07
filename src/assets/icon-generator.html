@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Explorer Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .instructions {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #3f51b5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .icon-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Explorer Icon Generator</h1>
+    
+    <div class="instructions">
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Haz clic en "Generar todos los iconos"</li>
+            <li>Para cada icono, haz clic derecho y selecciona "Guardar imagen como..."</li>
+            <li>Guarda el icono en la carpeta <code>src/assets/icons/</code> de tu proyecto</li>
+            <li>Asegúrate de nombrarlos como <code>icon-72x72.png</code>, <code>icon-96x96.png</code>, etc.</li>
+        </ol>
+    </div>
+    
+    <button id="generateBtn">Generar todos los iconos</button>
+    
+    <div class="icons-grid" id="iconsContainer"></div>
+
+    <script>
+        // Tamaños de iconos requeridos
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function generateIcon(canvas, size) {
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Fondo
+            ctx.fillStyle = '#3f51b5'; // Color primario Material
+            ctx.fillRect(0, 0, size, size);
+            
+            // Borde
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.03;
+            ctx.strokeRect(size * 0.1, size * 0.1, size * 0.8, size * 0.8);
+            
+            // Círculo central (como un disco)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Círculo interno (como un agujero del disco)
+            ctx.fillStyle = '#3f51b5';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size * 0.05, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Nota musical
+            ctx.fillStyle = '#ffffff';
+            // Cabeza de la nota
+            ctx.beginPath();
+            ctx.ellipse(size * 0.65, size * 0.4, size * 0.08, size * 0.06, Math.PI / 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Stem de la nota
+            ctx.fillRect(size * 0.72, size * 0.25, size * 0.02, size * 0.35);
+        }
+        
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const container = document.getElementById('iconsContainer');
+            container.innerHTML = '';
+            
+            sizes.forEach(size => {
+                const div = document.createElement('div');
+                div.className = 'icon-container';
+                
+                const canvas = document.createElement('canvas');
+                generateIcon(canvas, size);
+                
+                const label = document.createElement('p');
+                label.textContent = `${size}x${size}`;
+                
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = 'Descargar';
+                downloadBtn.addEventListener('click', function() {
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}x${size}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+                
+                div.appendChild(canvas);
+                div.appendChild(label);
+                div.appendChild(downloadBtn);
+                container.appendChild(div);
+            });
+        });
+    </script>
+</body>
+</html>
