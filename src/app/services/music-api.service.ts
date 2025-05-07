@@ -96,7 +96,7 @@ export class MusicApiService {
       return of(this.cachedArtists.slice(0, count));
     }
 
-    // Usando URL proxy
+    // Intentar usar la API real primero
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/chart/0/artists?limit=${count}`).pipe(
       map(response => {
         console.log('Deezer response:', response);
@@ -144,8 +144,11 @@ export class MusicApiService {
       }),
       catchError(error => {
         console.error('Error al obtener artistas de Deezer:', error);
-        // En caso de error, usar datos de demostración
-        return of(this.getDemoArtists());
+        // En caso de error CORS u otro error, usar datos de demostración que son más completos
+        console.log('Usando datos de demostración debido a errores de API');
+        const demoData = this.getDemoArtists();
+        this.cachedArtists = demoData;
+        return of(demoData);
       })
     );
   }
@@ -336,7 +339,6 @@ export class MusicApiService {
           content: 'Coldplay es una banda británica de rock formada en Londres en 1996. Está integrada por Chris Martin, Jon Buckland, Guy Berryman y Will Champion.'
         }
       },
-      // ... otros artistas de demostración ...
       {
         id: '2',
         name: 'Ed Sheeran',
@@ -367,6 +369,70 @@ export class MusicApiService {
         bio: {
           summary: 'Taylor Swift es una cantautora estadounidense.',
           content: 'Taylor Alison Swift es una cantautora, productora, directora, actriz y empresaria estadounidense.'
+        }
+      },
+      {
+        id: '4',
+        name: 'Dua Lipa',
+        image: 'https://e-cdns-images.dzcdn.net/images/artist/e6a04d735249d8370f56e1fb640a28c3/500x500-000000-80-0-0.jpg',
+        listeners: '13800000',
+        url: 'https://www.deezer.com/artist/8706544',
+        categories: ['Music', 'Pop'],
+        rating: 4,
+        progress: 86,
+        albums: [],
+        tags: ['Pop', 'Dance', 'Electronic'],
+        bio: {
+          summary: 'Dua Lipa es una cantante y compositora británica.',
+          content: 'Dua Lipa es una cantante, compositora y modelo británica-albanesa.'
+        }
+      },
+      {
+        id: '5',
+        name: 'The Weeknd',
+        image: 'https://e-cdns-images.dzcdn.net/images/artist/033d460f704896c9caca89a1d753a137/500x500-000000-80-0-0.jpg',
+        listeners: '19500000',
+        url: 'https://www.deezer.com/artist/4050205',
+        categories: ['Music', 'R&B'],
+        rating: 5,
+        progress: 92,
+        albums: [],
+        tags: ['R&B', 'Pop', 'Hip-Hop'],
+        bio: {
+          summary: 'The Weeknd es un cantante canadiense.',
+          content: 'Abel Makkonen Tesfaye, conocido por su nombre artístico The Weeknd, es un cantante, compositor y productor discográfico canadiense.'
+        }
+      },
+      {
+        id: '6',
+        name: 'Ariana Grande',
+        image: 'https://e-cdns-images.dzcdn.net/images/artist/3b99aa38bc4f58b05d6671c918eeb03e/500x500-000000-80-0-0.jpg',
+        listeners: '17800000',
+        url: 'https://www.deezer.com/artist/1562681',
+        categories: ['Music', 'Pop'],
+        rating: 5,
+        progress: 90,
+        albums: [],
+        tags: ['Pop', 'R&B', 'Vocal'],
+        bio: {
+          summary: 'Ariana Grande es una cantante y actriz estadounidense.',
+          content: 'Ariana Grande-Butera es una cantante, compositora y actriz estadounidense. Ha recibido numerosos premios a lo largo de su carrera.'
+        }
+      },
+      {
+        id: '7',
+        name: 'Imagine Dragons',
+        image: 'https://e-cdns-images.dzcdn.net/images/artist/6abb0eb19a6a26cc4b44389cd8505892/500x500-000000-80-0-0.jpg',
+        listeners: '12300000',
+        url: 'https://www.deezer.com/artist/416239',
+        categories: ['Music', 'Rock'],
+        rating: 4,
+        progress: 84,
+        albums: [],
+        tags: ['Rock', 'Alternative', 'Pop'],
+        bio: {
+          summary: 'Imagine Dragons es una banda estadounidense de pop rock.',
+          content: 'Imagine Dragons es una banda estadounidense de pop rock formada en Las Vegas, Nevada. Está compuesta por Dan Reynolds, Wayne Sermon, Ben McKee y Daniel Platzman.'
         }
       }
     ];

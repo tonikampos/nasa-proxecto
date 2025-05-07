@@ -56,6 +56,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // Intentar cargar datos reales, pero con fallback a datos de demostración
     this.loadTopArtists();
     
     // Configurar búsqueda con debounce
@@ -69,8 +70,22 @@ export class HomeComponent implements OnInit {
   loadTopArtists(): void {
     console.log('Cargando artistas principales...');
     this.loading = true;
+    
+    // Variable para control de timeout
+    let timeoutId: any;
+    
+    // Establecer un tiempo límite para la carga
+    timeoutId = setTimeout(() => {
+      if (this.loading) {
+        console.warn('Tiempo de espera excedido, usando datos de respaldo');
+        this.loading = false;
+        // El servicio debería usar datos de demostración en caso de error
+      }
+    }, 8000); // 8 segundos de espera máxima
+    
     this.musicService.getTopArtists(20).subscribe({
       next: (data) => {
+        clearTimeout(timeoutId);
         console.log('Artistas cargados:', data.length);
         
         if (data && data.length > 0) {
@@ -84,8 +99,8 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
+        clearTimeout(timeoutId);
         console.error('Error al cargar artistas:', error);
-        // Mostrar mensajes amigables al usuario
         this.artists = [];
         this.loading = false;
       }
