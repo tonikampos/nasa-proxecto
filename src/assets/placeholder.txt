@@ -1,0 +1,2 @@
+// Asegúrate de tener una imagen default-artist.jpg en esta carpeta
+// Esta imagen se usará cuando las otras no carguen correctamente

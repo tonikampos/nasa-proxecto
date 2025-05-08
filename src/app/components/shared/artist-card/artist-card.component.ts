@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,7 +60,7 @@ import { MatButtonModule } from '@angular/material/button';
     }
   `]
 })
-export class ArtistCardComponent implements OnInit {
+export class ArtistCardComponent implements OnInit, OnChanges {
   @Input() artist: any;
   imageError = false;
   safeImageUrl = '';
@@ -69,38 +69,58 @@ export class ArtistCardComponent implements OnInit {
     this.processSafeImageUrl();
   }
   
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['artist']) {
+      this.imageError = false;
+      this.processSafeImageUrl();
+    }
+  }
+  
   processSafeImageUrl() {
-    // Si no hay artista o ya hay un error previo
+    // Inicializar con la imagen predeterminada
+    this.safeImageUrl = '/assets/default-artist.jpg';
+    
+    // Si no hay artista, mantener la imagen predeterminada
     if (!this.artist || this.imageError) {
-      this.safeImageUrl = '/assets/default-artist.jpg';
       return;
     }
     
+    // Si no hay imagen, mantener la predeterminada
     if (!this.artist.image) {
-      this.safeImageUrl = '/assets/default-artist.jpg';
       return;
     }
     
-    // Verificar y adaptar la URL de la imagen para Netlify
+    // Proceso de la URL de imagen dependiendo del entorno
     const isNetlify = window.location.hostname.includes('netlify');
     
-    if (isNetlify) {
-      // Para URLs externas de Deezer directas
-      if (this.artist.image.includes('cdn-images.dzcdn.net') || 
-          this.artist.image.includes('e-cdns-images.dzcdn.net')) {
-        // Usar URL directamente
-        this.safeImageUrl = this.artist.image;
-      } else if (this.artist.id <= 7) {
-        // Imágenes de datos de demostración
-        this.safeImageUrl = this.artist.image;
-      } else {
-        // Caso fallback
+    // Procesar la URL para asegurar que es HTTPS
+    let imageUrl = this.artist.image;
+    
+    // Si la URL ya es completa y usa HTTPS
+    if (imageUrl.startsWith('https://')) {
+      // Asegurarse de que usamos el dominio CDN correcto para Deezer
+      if (imageUrl.includes('cdn-images.dzcdn.net') || 
+          imageUrl.includes('e-cdns-images.dzcdn.net')) {
+        this.safeImageUrl = imageUrl;
+      } 
+      // Cualquier otra URL HTTPS es aceptable
+      else {
+        this.safeImageUrl = imageUrl;
+      }
+    } 
+    // Si la URL es relativa o HTTP, intentamos repararla
+    else {
+      // Para URLs HTTP, convertir a HTTPS
+      if (imageUrl.startsWith('http://')) {
+        this.safeImageUrl = imageUrl.replace('http://', 'https://');
+      } 
+      // Para URLs relativas, mantener la predeterminada
+      else {
         this.safeImageUrl = '/assets/default-artist.jpg';
       }
-    } else {
-      // En desarrollo local, usar URL tal como viene
-      this.safeImageUrl = this.artist.image;
     }
+    
+    console.log(`Procesada URL de ${this.artist.name}: ${this.safeImageUrl}`);
   }
   
   handleImageError(event: Event): void {

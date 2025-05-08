@@ -333,7 +333,6 @@ export class MusicApiService {
 
   // Método para proporcionar datos de demostración cuando la API no responde
   private getDemoArtists(): EnhancedArtist[] {
-    // Ensure all demo images use https CDN URLs
     return [
       {
         id: '1',
@@ -344,7 +343,22 @@ export class MusicApiService {
         categories: ['Music', 'Rock'],
         rating: 5,
         progress: 95,
-        albums: [],
+        albums: [
+          {
+            id: '302127',
+            name: 'A Rush of Blood to the Head',
+            image: 'https://e-cdns-images.dzcdn.net/images/cover/c58735e7c0d69b9e980b5250664b513e/500x500-000000-80-0-0.jpg',
+            release_date: '2002-08-26',
+            url: 'https://www.deezer.com/album/302127'
+          },
+          {
+            id: '15486660',
+            name: 'Ghost Stories',
+            image: 'https://e-cdns-images.dzcdn.net/images/cover/e894437a5b87f6b7b777fedf3af25d52/500x500-000000-80-0-0.jpg',
+            release_date: '2014-05-19',
+            url: 'https://www.deezer.com/album/15486660'
+          }
+        ],
         tags: ['Rock', 'Pop', 'Alternative'],
         bio: {
           summary: 'Coldplay es una banda británica de rock formada en Londres en 1996.',

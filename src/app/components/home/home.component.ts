@@ -71,6 +71,10 @@ export class HomeComponent implements OnInit {
     console.log('Cargando artistas principales...');
     this.loading = true;
     
+    // Agregar registro para verificar el entorno
+    const isNetlify = window.location.hostname.includes('netlify.app');
+    console.log(`Entorno: ${isNetlify ? 'Netlify' : 'Local'}`);
+    
     // Variable para control de timeout
     let timeoutId: any;
     
@@ -89,8 +93,13 @@ export class HomeComponent implements OnInit {
         console.log('Artistas cargados:', data.length);
         
         if (data && data.length > 0) {
-          console.log('Primer artista:', data[0]);
           this.artists = data;
+          
+          // Registro extra para depurar problemas de imágenes
+          console.log('URLs de imágenes de los primeros 3 artistas:');
+          data.slice(0, 3).forEach(artist => {
+            console.log(`${artist.name}: ${artist.image}`);
+          });
         } else {
           console.warn('No se recibieron artistas de la API');
           this.artists = [];
