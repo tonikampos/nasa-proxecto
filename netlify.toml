@@ -1,4 +1,4 @@
-# Configuración para redireccionamiento de API
+# Configuración de redirecciones para la API
 [[redirects]]
   from = "/api/deezer/*"
   to = "https://api.deezer.com/:splat"
@@ -6,7 +6,7 @@
   force = true
   headers = {Access-Control-Allow-Origin = "*"}
 
-# Configuración para la aplicación SPA
+# Configuración SPA (importante para rutas Angular)
 [[redirects]]
   from = "/*"
   to = "/index.html"

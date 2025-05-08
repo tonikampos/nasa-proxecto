@@ -11,7 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(APP_ROUTES),
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimations(),
-    // Descomentamos el service worker para habilitarlo
     provideServiceWorker('ngsw-worker.js', {
       enabled: true, // Forzar habilitación incluso en desarrollo
       registrationStrategy: 'registerWhenStable:30000'

@@ -36,19 +36,21 @@
       "cacheConfig": {
         "maxSize": 100,
         "maxAge": "1d",
-        "strategy": "freshness"
+        "strategy": "freshness",
+        "timeout": "5s"
       }
     },
     {
       "name": "deezer-images",
       "urls": [
         "https://e-cdns-images.dzcdn.net/**",
-        "https://cdn-images.dzcdn.net/**"
+        "https://cdn-images.dzcdn.net/**",
+        "https://*.dzcdn.net/**"
       ],
       "cacheConfig": {
-        "maxSize": 200,
+        "maxSize": 300,
         "maxAge": "30d",
-        "strategy": "performance",
+        "strategy": "performance", 
         "timeout": "10s"
       }
     }

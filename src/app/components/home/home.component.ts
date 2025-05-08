@@ -56,6 +56,7 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log('Inicializando HomeComponent');
     // Intentar cargar datos reales, pero con fallback a datos de demostración
     this.loadTopArtists();
     
@@ -117,6 +118,7 @@ export class HomeComponent implements OnInit {
   }
 
   onSearch(event: any): void {
+    console.log(`Término de búsqueda: "${event.target.value}"`);
     this.searchSubject.next(event.target.value);
   }
 
@@ -126,9 +128,11 @@ export class HomeComponent implements OnInit {
       return;
     }
     
+    console.log(`Realizando búsqueda: "${term}"`);
     this.loading = true;
     this.musicService.searchArtists(term).subscribe({
       next: (data) => {
+        console.log(`Resultados de búsqueda para "${term}":`, data.length);
         this.artists = data;
         this.loading = false;
       },
@@ -140,10 +144,12 @@ export class HomeComponent implements OnInit {
   }
 
   toggleView(mode: string): void {
+    console.log(`Cambiando vista a: ${mode}`);
     this.viewMode = mode;
   }
 
   viewDetails(artistId: string): void {
+    console.log(`Navegando a detalles del artista ID ${artistId}`);
     this.router.navigate(['/artist', artistId]);
   }
 }
