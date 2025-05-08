@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card-header>
       
       <div class="image-container">
-        <img [src]="imageUrl" 
+        <img [src]="safeImageUrl" 
              [alt]="artist?.name" 
              class="artist-image"
              (error)="handleImageError($event)">
@@ -60,34 +60,53 @@ import { MatButtonModule } from '@angular/material/button';
     }
   `]
 })
-export class ArtistCardComponent {
+export class ArtistCardComponent implements OnInit {
   @Input() artist: any;
-  imageUrlFailed = false;
+  imageError = false;
+  safeImageUrl = '';
   
-  get imageUrl(): string {
-    if (this.imageUrlFailed || !this.artist?.image) {
-      return '/assets/default-artist.jpg';
+  ngOnInit() {
+    this.processSafeImageUrl();
+  }
+  
+  processSafeImageUrl() {
+    // Si no hay artista o ya hay un error previo
+    if (!this.artist || this.imageError) {
+      this.safeImageUrl = '/assets/default-artist.jpg';
+      return;
     }
     
-    // Comprobar si estamos en Netlify y usar URL directa fallback si es necesario
-    if (window.location.hostname.includes('netlify.app')) {
-      // Para datos de demo, las imágenes ya están en formato URL completo
-      if (this.artist.id <= 7) {
-        return this.artist.image;
-      }
-      
-      // Convertir URL proxy a URL directa para Netlify
-      if (this.artist.image.includes('cdn-images.dzcdn.net')) {
-        return this.artist.image;
-      }
+    if (!this.artist.image) {
+      this.safeImageUrl = '/assets/default-artist.jpg';
+      return;
     }
     
-    return this.artist?.image || '/assets/default-artist.jpg';
+    // Verificar y adaptar la URL de la imagen para Netlify
+    const isNetlify = window.location.hostname.includes('netlify');
+    
+    if (isNetlify) {
+      // Para URLs externas de Deezer directas
+      if (this.artist.image.includes('cdn-images.dzcdn.net') || 
+          this.artist.image.includes('e-cdns-images.dzcdn.net')) {
+        // Usar URL directamente
+        this.safeImageUrl = this.artist.image;
+      } else if (this.artist.id <= 7) {
+        // Imágenes de datos de demostración
+        this.safeImageUrl = this.artist.image;
+      } else {
+        // Caso fallback
+        this.safeImageUrl = '/assets/default-artist.jpg';
+      }
+    } else {
+      // En desarrollo local, usar URL tal como viene
+      this.safeImageUrl = this.artist.image;
+    }
   }
   
   handleImageError(event: Event): void {
-    console.log('Error loading image, using default');
-    this.imageUrlFailed = true;
+    console.log('Error loading image for', this.artist?.name);
+    this.imageError = true;
+    this.safeImageUrl = '/assets/default-artist.jpg';
     (event.target as HTMLImageElement).src = '/assets/default-artist.jpg';
   }
 }

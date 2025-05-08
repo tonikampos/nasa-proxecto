@@ -1,0 +1,46 @@
+<!-- No es necesario incluir este archivo en la build, es solo para crear el default-artist.jpg -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Default Artist Image Generator</title>
+</head>
+<body>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <script>
+    // Script para generar una imagen por defecto
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Fondo
+    ctx.fillStyle = '#3f51b5';
+    ctx.fillRect(0, 0, 400, 400);
+    
+    // Borde
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(30, 30, 340, 340);
+    
+    // Icono de música
+    ctx.fillStyle = 'white';
+    // Dibujar silueta
+    ctx.beginPath();
+    ctx.arc(200, 160, 80, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Texto
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 26px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Music Explorer', 200, 300);
+    ctx.font = '22px Arial';
+    ctx.fillText('Imagen no disponible', 200, 340);
+    
+    // Guardar como JPG
+    const link = document.createElement('a');
+    link.download = 'default-artist.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.9);
+    document.body.appendChild(link);
+    link.click();
+  </script>
+</body>
+</html>
