@@ -1,4 +1,4 @@
-# Proxy para la API de Deezer
+# Configuración para redireccionamiento de API
 [[redirects]]
   from = "/api/deezer/*"
   to = "https://api.deezer.com/:splat"
@@ -6,14 +6,14 @@
   force = true
   headers = {Access-Control-Allow-Origin = "*"}
 
-# Headers para permitir CORS en las imágenes externas
-[[headers]]
-  for = "/*"
-    [headers.values]
-    Access-Control-Allow-Origin = "*"
-
-# SPA routing
+# Configuración para la aplicación SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Headers para permitir imágenes desde dominios externos
+[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"

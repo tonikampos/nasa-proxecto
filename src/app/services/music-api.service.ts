@@ -89,25 +89,14 @@ export class MusicApiService {
   
   constructor(private http: HttpClient) { }
 
-  getTopArtists(count: number = 10): Observable<EnhancedArtist[]> {
+  getTopArtists(count: number = 20): Observable<EnhancedArtist[]> {
     console.log('Obteniendo artistas principales...');
     
     if (this.cachedArtists.length >= count) {
       return of(this.cachedArtists.slice(0, count));
     }
 
-    // Detectar si estamos en entorno de producción en Netlify
-    const isNetlify = window.location.hostname.includes('netlify.app');
-    
-    // En Netlify, preferimos usar los datos de demostración directamente
-    if (isNetlify) {
-      console.log('Ejecutando en Netlify, usando datos de demostración');
-      const demoData = this.getDemoArtists();
-      this.cachedArtists = demoData;
-      return of(demoData);
-    }
-
-    // Intentar usar la API real primero (en desarrollo local)
+    // Intentar usar la API real tanto en local como en Netlify
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/chart/0/artists?limit=${count}`).pipe(
       map(response => {
         console.log('Deezer response:', response);

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card-header>
       
       <div class="image-container">
-        <img [src]="safeImageUrl" 
+        <img [src]="processedImageUrl" 
              [alt]="artist?.name" 
              class="artist-image"
              (error)="handleImageError($event)">
@@ -60,73 +60,42 @@ import { MatButtonModule } from '@angular/material/button';
     }
   `]
 })
-export class ArtistCardComponent implements OnInit, OnChanges {
+export class ArtistCardComponent implements OnChanges {
   @Input() artist: any;
-  imageError = false;
-  safeImageUrl = '';
-  
-  ngOnInit() {
-    this.processSafeImageUrl();
-  }
+  processedImageUrl = '/assets/default-artist.jpg';
   
   ngOnChanges(changes: SimpleChanges) {
     if (changes['artist']) {
-      this.imageError = false;
-      this.processSafeImageUrl();
+      this.processImageUrl();
     }
   }
   
-  processSafeImageUrl() {
-    // Inicializar con la imagen predeterminada
-    this.safeImageUrl = '/assets/default-artist.jpg';
-    
-    // Si no hay artista, mantener la imagen predeterminada
-    if (!this.artist || this.imageError) {
+  processImageUrl() {
+    if (!this.artist || !this.artist.image) {
+      this.processedImageUrl = '/assets/default-artist.jpg';
       return;
     }
     
-    // Si no hay imagen, mantener la predeterminada
-    if (!this.artist.image) {
-      return;
-    }
-    
-    // Proceso de la URL de imagen dependiendo del entorno
-    const isNetlify = window.location.hostname.includes('netlify');
-    
-    // Procesar la URL para asegurar que es HTTPS
+    // Siempre asegurar que la URL es HTTPS
     let imageUrl = this.artist.image;
-    
-    // Si la URL ya es completa y usa HTTPS
-    if (imageUrl.startsWith('https://')) {
-      // Asegurarse de que usamos el dominio CDN correcto para Deezer
-      if (imageUrl.includes('cdn-images.dzcdn.net') || 
-          imageUrl.includes('e-cdns-images.dzcdn.net')) {
-        this.safeImageUrl = imageUrl;
-      } 
-      // Cualquier otra URL HTTPS es aceptable
-      else {
-        this.safeImageUrl = imageUrl;
-      }
-    } 
-    // Si la URL es relativa o HTTP, intentamos repararla
-    else {
-      // Para URLs HTTP, convertir a HTTPS
-      if (imageUrl.startsWith('http://')) {
-        this.safeImageUrl = imageUrl.replace('http://', 'https://');
-      } 
-      // Para URLs relativas, mantener la predeterminada
-      else {
-        this.safeImageUrl = '/assets/default-artist.jpg';
-      }
+    if (imageUrl.startsWith('http://')) {
+      imageUrl = imageUrl.replace('http://', 'https://');
     }
     
-    console.log(`Procesada URL de ${this.artist.name}: ${this.safeImageUrl}`);
+    // Verificar si es una URL de Deezer
+    if (imageUrl.includes('cdn-images.dzcdn.net') || 
+        imageUrl.includes('e-cdns-images.dzcdn.net')) {
+      this.processedImageUrl = imageUrl;
+      console.log(`Imagen de ${this.artist.name} procesada: ${this.processedImageUrl}`);
+    } else {
+      this.processedImageUrl = imageUrl;
+      console.log(`Imagen no Deezer para ${this.artist.name}: ${this.processedImageUrl}`);
+    }
   }
   
-  handleImageError(event: Event): void {
-    console.log('Error loading image for', this.artist?.name);
-    this.imageError = true;
-    this.safeImageUrl = '/assets/default-artist.jpg';
+  handleImageError(event: Event) {
+    console.log(`Error cargando imagen para ${this.artist?.name}`);
+    this.processedImageUrl = '/assets/default-artist.jpg';
     (event.target as HTMLImageElement).src = '/assets/default-artist.jpg';
   }
 }
