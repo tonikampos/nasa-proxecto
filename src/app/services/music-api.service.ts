@@ -96,7 +96,18 @@ export class MusicApiService {
       return of(this.cachedArtists.slice(0, count));
     }
 
-    // Intentar usar la API real primero
+    // Detectar si estamos en entorno de producción en Netlify
+    const isNetlify = window.location.hostname.includes('netlify.app');
+    
+    // En Netlify, preferimos usar los datos de demostración directamente
+    if (isNetlify) {
+      console.log('Ejecutando en Netlify, usando datos de demostración');
+      const demoData = this.getDemoArtists();
+      this.cachedArtists = demoData;
+      return of(demoData);
+    }
+
+    // Intentar usar la API real primero (en desarrollo local)
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/chart/0/artists?limit=${count}`).pipe(
       map(response => {
         console.log('Deezer response:', response);
@@ -322,6 +333,7 @@ export class MusicApiService {
 
   // Método para proporcionar datos de demostración cuando la API no responde
   private getDemoArtists(): EnhancedArtist[] {
+    // Ensure all demo images use https CDN URLs
     return [
       {
         id: '1',

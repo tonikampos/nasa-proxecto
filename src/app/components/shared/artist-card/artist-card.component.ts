@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
       </mat-card-header>
       
       <div class="image-container">
-        <img [src]="isImageWorking ? (artist?.image || '/assets/default-artist.jpg') : '/assets/default-artist.jpg'" 
+        <img [src]="imageUrl" 
              [alt]="artist?.name" 
              class="artist-image"
              (error)="handleImageError($event)">
@@ -62,11 +62,32 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ArtistCardComponent {
   @Input() artist: any;
-  isImageWorking = true; // Track if external image is working
+  imageUrlFailed = false;
+  
+  get imageUrl(): string {
+    if (this.imageUrlFailed || !this.artist?.image) {
+      return '/assets/default-artist.jpg';
+    }
+    
+    // Comprobar si estamos en Netlify y usar URL directa fallback si es necesario
+    if (window.location.hostname.includes('netlify.app')) {
+      // Para datos de demo, las imágenes ya están en formato URL completo
+      if (this.artist.id <= 7) {
+        return this.artist.image;
+      }
+      
+      // Convertir URL proxy a URL directa para Netlify
+      if (this.artist.image.includes('cdn-images.dzcdn.net')) {
+        return this.artist.image;
+      }
+    }
+    
+    return this.artist?.image || '/assets/default-artist.jpg';
+  }
   
   handleImageError(event: Event): void {
     console.log('Error loading image, using default');
-    this.isImageWorking = false; // Mark that external image failed
+    this.imageUrlFailed = true;
     (event.target as HTMLImageElement).src = '/assets/default-artist.jpg';
   }
 }
