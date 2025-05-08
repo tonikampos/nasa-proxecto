@@ -83,9 +83,9 @@ interface EnhancedArtist {
 })
 export class MusicApiService {
   // URL relativa que pasará por el proxy
-  private deezerApiUrl = '/api/deezer';
+  private deezerApiUrl = '/api/deezer';  // ✓ Correcto: comienza con /
+  private defaultImage = '/assets/default-artist.jpg';  // ✓ Correcto: comienza con /
   private cachedArtists: EnhancedArtist[] = [];
-  private defaultImage = '/assets/default-artist.jpg';
   
   constructor(private http: HttpClient) { }
 

@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
+import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -11,8 +11,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(APP_ROUTES),
     provideHttpClient(withInterceptorsFromDi()),
     provideAnimations(),
+    // Descomentamos el service worker para habilitarlo
     provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+      enabled: true, // Forzar habilitación incluso en desarrollo
       registrationStrategy: 'registerWhenStable:30000'
     })
   ]
