@@ -56,61 +56,40 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('Inicializando HomeComponent');
-    // Intentar cargar datos reales, pero con fallback a datos de demostración
     this.loadTopArtists();
     
-    // Configurar búsqueda con debounce
     this.searchSubject.pipe(
-      debounceTime(300) // Esperar 300ms después de la última tecla
+      debounceTime(300)
     ).subscribe(term => {
       this.performSearch(term);
     });
   }
 
   loadTopArtists(): void {
-    console.log('Cargando artistas principales...');
     this.loading = true;
     
-    // Agregar registro para verificar el entorno
-    const isNetlify = window.location.hostname.includes('netlify.app');
-    console.log(`Entorno: ${isNetlify ? 'Netlify' : 'Local'}`);
-    
-    // Variable para control de timeout
     let timeoutId: any;
     
-    // Establecer un tiempo límite para la carga
     timeoutId = setTimeout(() => {
       if (this.loading) {
-        console.warn('Tiempo de espera excedido, usando datos de respaldo');
         this.loading = false;
-        // El servicio debería usar datos de demostración en caso de error
       }
-    }, 8000); // 8 segundos de espera máxima
+    }, 8000);
     
     this.musicService.getTopArtists(20).subscribe({
       next: (data) => {
         clearTimeout(timeoutId);
-        console.log('Artistas cargados:', data.length);
         
         if (data && data.length > 0) {
           this.artists = data;
-          
-          // Registro extra para depurar problemas de imágenes
-          console.log('URLs de imágenes de los primeros 3 artistas:');
-          data.slice(0, 3).forEach(artist => {
-            console.log(`${artist.name}: ${artist.image}`);
-          });
         } else {
-          console.warn('No se recibieron artistas de la API');
           this.artists = [];
         }
         
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         clearTimeout(timeoutId);
-        console.error('Error al cargar artistas:', error);
         this.artists = [];
         this.loading = false;
       }
@@ -118,7 +97,6 @@ export class HomeComponent implements OnInit {
   }
 
   onSearch(event: any): void {
-    console.log(`Término de búsqueda: "${event.target.value}"`);
     this.searchSubject.next(event.target.value);
   }
 
@@ -128,28 +106,23 @@ export class HomeComponent implements OnInit {
       return;
     }
     
-    console.log(`Realizando búsqueda: "${term}"`);
     this.loading = true;
     this.musicService.searchArtists(term).subscribe({
       next: (data) => {
-        console.log(`Resultados de búsqueda para "${term}":`, data.length);
         this.artists = data;
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error searching artists:', error);
+      error: () => {
         this.loading = false;
       }
     });
   }
 
   toggleView(mode: string): void {
-    console.log(`Cambiando vista a: ${mode}`);
     this.viewMode = mode;
   }
 
   viewDetails(artistId: string): void {
-    console.log(`Navegando a detalles del artista ID ${artistId}`);
     this.router.navigate(['/artist', artistId]);
   }
 }

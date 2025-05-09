@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, forkJoin, catchError, retry } from 'rxjs';
 
-// Interfaces para Deezer
 interface DeezerArtistImage {
-  picture: string;        // URL pequeña
-  picture_small: string;  // 56x56
-  picture_medium: string; // 250x250
-  picture_big: string;    // 500x500
-  picture_xl: string;     // 1000x1000
+  picture: string;
+  picture_small: string;
+  picture_medium: string;
+  picture_big: string;
+  picture_xl: string;
 }
 
 interface DeezerArtist extends DeezerArtistImage {
@@ -60,7 +59,6 @@ interface DeezerResponse {
   next?: string;
 }
 
-// Interfaz para los artistas mejorados que usamos en nuestra app
 interface EnhancedArtist {
   id: string;
   name: string;
@@ -82,46 +80,31 @@ interface EnhancedArtist {
   providedIn: 'root'
 })
 export class MusicApiService {
-  // URL relativa que pasará por el proxy
   private deezerApiUrl = '/api/deezer';
-  // Asegurar que la ruta existe
-  private defaultImage = '/assets/icons/icon-512x512.png';  // Cambiado para usar un icono que sabemos que existe
+  private defaultImage = '/assets/icons/icon-512x512.png';
   private cachedArtists: EnhancedArtist[] = [];
   private isOfflineMode = !navigator.onLine;
   
   constructor(private http: HttpClient) {
-    // Detectar cambios en la conexión
-    window.addEventListener('online', () => {
-      console.log('🟢 La aplicación está online');
-      this.isOfflineMode = false;
-    });
-    
-    window.addEventListener('offline', () => {
-      console.log('🔴 La aplicación está offline - usando caché');
-      this.isOfflineMode = true;
-    });
+    window.addEventListener('online', () => this.isOfflineMode = false);
+    window.addEventListener('offline', () => this.isOfflineMode = true);
   }
 
-  // Función mejorada para manejar URLs de imágenes con más robustez
   private getImageUrl(artist: DeezerArtist): string {
-    // Verificar cada imagen en orden de preferencia
     let imageUrl = artist.picture_big || 
                    artist.picture_medium || 
                    artist.picture_small || 
                    artist.picture;
     
-    // Si no hay imagen o la URL no es válida, usar la imagen por defecto
     if (!imageUrl || !this.isValidImageUrl(imageUrl)) {
       console.log(`Usando imagen por defecto para ${artist.name} - URL original: ${imageUrl}`);
       return this.defaultImage;
     }
     
-    // Reparar URLs que puedan estar malformadas
     if (imageUrl.includes('https:https://') || imageUrl.includes('http:https://')) {
       imageUrl = imageUrl.replace('https:https://', 'https://').replace('http:https://', 'https://');
     }
     
-    // Asegurarnos que usamos HTTPS
     if (imageUrl.startsWith('http:')) {
       imageUrl = imageUrl.replace('http:', 'https:');
     }
@@ -129,12 +112,10 @@ export class MusicApiService {
     return imageUrl;
   }
   
-  // Método para validar URLs de imágenes
   private isValidImageUrl(url: string): boolean {
     if (!url) return false;
     
     try {
-      // Verificar formato básico URL
       return url.startsWith('http') && 
              (url.includes('.jpg') || 
               url.includes('.jpeg') || 
@@ -147,23 +128,14 @@ export class MusicApiService {
   }
 
   getTopArtists(count: number = 20): Observable<EnhancedArtist[]> {
-    console.log('Obteniendo artistas principales...');
-    
     if (this.cachedArtists.length >= count) {
-      console.log('Usando datos cacheados:', this.cachedArtists.length);
       return of(this.cachedArtists.slice(0, count));
     }
 
-    // Log para verificar el entorno
-    console.log(`URL API: ${this.deezerApiUrl}/chart/0/artists?limit=${count}`);
-
-    // Intentar usar la API real 
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/chart/0/artists?limit=${count}`)
       .pipe(
-        retry(3), // Reintentar hasta 3 veces en caso de error
+        retry(3),
         map(response => {
-          console.log('Deezer response:', response);
-          
           if (response && response.data && response.data.length > 0) {
             this.cachedArtists = response.data.map((artist: DeezerArtist) => {
               const imageUrl = this.getImageUrl(artist);
@@ -187,9 +159,6 @@ export class MusicApiService {
           return [];
         }),
         catchError(error => {
-          console.error('Error al obtener artistas de Deezer:', error);
-          
-          // Para que la aplicación no quede completamente vacía, crear al menos un artista de ejemplo
           this.cachedArtists = [{
             id: '0',
             name: 'Error cargando artistas',
@@ -214,9 +183,8 @@ export class MusicApiService {
       return of(cachedArtist);
     }
     
-    // Usando URL proxy
     return this.http.get<DeezerArtist>(`${this.deezerApiUrl}/artist/${id}`).pipe(
-      retry(2), // Reintentar hasta 2 veces
+      retry(2),
       map(artist => {
         if (artist) {
           const artistIndex = this.cachedArtists.findIndex(a => a.id === id);
@@ -258,13 +226,12 @@ export class MusicApiService {
       }),
       catchError(error => {
         console.error('Error al obtener detalles del artista:', error);
-        return of(null); // Sin datos de demostración, retornar null
+        return of(null);
       })
     );
   }
 
   getArtistAlbums(artistId: string): Observable<any[]> {
-    // Usando URL proxy
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/artist/${artistId}/albums?limit=10`).pipe(
       map(response => {
         if (response && response.data) {
@@ -287,12 +254,11 @@ export class MusicApiService {
   }
 
   private enrichArtistData(artistId: string): Observable<any> {
-    // Usando URL proxy
     return this.http.get<any>(`${this.deezerApiUrl}/artist/${artistId}/top?limit=5`).pipe(
       map(response => {
         if (response && response.data && response.data.length > 0) {
           console.log(`Obtenidas ${response.data.length} canciones top para artista ID ${artistId}`);
-          let genres: string[] = ['Pop', 'Rock']; // Géneros por defecto
+          let genres: string[] = ['Pop', 'Rock'];
           
           try {
             const extractedGenres: string[] = [];
@@ -354,9 +320,8 @@ export class MusicApiService {
     }
 
     console.log(`Buscando artistas con término: "${query}"`);
-    // Usando URL proxy
     return this.http.get<DeezerResponse>(`${this.deezerApiUrl}/search/artist?q=${encodeURIComponent(query)}&limit=10`).pipe(
-      retry(2), // Reintentar hasta 2 veces
+      retry(2),
       map(response => {
         if (response && response.data) {
           console.log(`Encontrados ${response.data.length} artistas para "${query}"`);

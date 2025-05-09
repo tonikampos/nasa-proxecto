@@ -1,1 +1,1 @@
-// Este archivo debe ser eliminado completamente
+// Este archivo debe ser eliminado por completo (no modificado)
